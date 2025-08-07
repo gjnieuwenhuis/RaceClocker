@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title></title>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' rel='stylesheet'>
+</head>
+<body class='bg-light d-flex align-items-center' style='height: 100;'>
+<div class='container'>
+<div class='row justify-content-center'>
+<div class='col-md-10 col-lg-8'>
+<div class='card shadow-lg rounded-4'>
+<div class='card-body'>
+<h3 class='card-title text-center mb-4'>RaceClocker Timing Usage</h3>
+<div class='table-responsive'>
+<table class='table table-bordered table-striped text-center align-middle'>
+<thead class='table-dark'>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Location</td>
+<td>Start or Finish. E.g. Location=Start</td>
+</tr>
+<tr>
+<td>PrimaryID</td>
+<td>The ID of the results of the primary race.<br>https://raceclocker.com/b4e0c99a => b4e0c99a is the ID. E.g. PrimaryID=b4e0c99a </td>
+</tr>
+<tr>
+<td>SecondaryID</td>
+<td>The ID of the results of the secondary race.<br>https://raceclocker.com/b4e0c99b => b4e0c99b is the ID. E.g. SecondaryID=b4e0c99b </td></td>
+</tr>
+<tr>
+<td>Number</td>
+<td>The number of last timed results to be shown. E.g. Number=10</td>
+</tr>
+<tr>
+<td>Refresh</td>
+<td>Refresh/reload time of the page in seconds. E.g. Refresh=5</td>
+</tr>
+<tr>
+<td>MaxDeviation</td>
+<td>Maximum deviation between the primary and secondary time in seconds.<br>The result will show red if this is exceeded. E.g. MaxDeviation=0.5</td>
+</tr>
+<tr>
+<td>Example URL</td>
+<td>https://yourwebsite.com/timing/timingcheck.php?Location=Start&PrimaryID=b4e0c99a&SecondaryID=b4e0c99b&Refresh=10&MaxDeviation=0.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'></script>
+</body>
+</html>
