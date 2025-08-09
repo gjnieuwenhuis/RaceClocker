@@ -3,15 +3,15 @@
 # RaceClocker Timing checked
 # Copyright G.J.Nieuwenhuis 2025
 
-# 2025-08-03 Versie 0.1 Initial version
-# 2025-08-04 Versie 0.2 Decimals added to time values
-# 2025-08-05 Versie 0.3 Location added to define Start/Finish
-# 2025-08-05 Versie 0.4 Usage/help page added in case required parameters are missing
-# 2025-08-06 Versie 0.5 Add further validation checks 
+# 2025-08-03 v0.1 Initial version
+# 2025-08-04 v0.2 Decimals added to time values
+# 2025-08-05 v0.3 Location added to define Start/Finish
+# 2025-08-05 v0.4 Usage/help page added in case required parameters are missing
+# 2025-08-06 v0.5 Add further validation checks
+# 2025-08-07 v0.6 Added sync status to check if primairy/secondary lists are the same
+# 2025-08-07 v0.7 Added error messages
 
-$Version = "0.5";
-
-#setlocale(LC_NUMERIC, 'C');
+$Version = "0.7";
 
 # Get all required parameters
 
@@ -76,6 +76,9 @@ if ($ParametersComplete) {
 
     $TimesPrimary = file_get_contents($PrimaryURL);
     $TimesSecondary =file_get_contents($SecondaryURL);
+    $PrimaryURLCheck = true;
+    $SecondaryURLCheck = true;
+
 
     # Fetch the RaceClocker names for the primary race
     preg_match('/<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']\s*\/?>/i', $TimesPrimary, $TitlePrimaryMatches);
@@ -103,13 +106,18 @@ if ($ParametersComplete) {
         if (is_array($json)) {
             # Define empty arrays
             $BibPrimary = [];
+            $BibPrimaryUnsorted = [];
             $NamePrimary = [];
             $TimePrimary = [];
+            $CatPrimary = [];
 
             # Fill Bib,Name, Time as separate arrays 
             foreach($json as $item) {
                 $BibPrimary[] = $item['Bib'];
+                $BibPrimaryUnsorted[] = $item['Bib'];
                 $NamePrimary[] = $item['Name'];
+                $CatPrimary[] = $item['Cat'];
+
                 # Fetch start times and combine with the decimal values to 00:00:00.0 format
                 if ($Location == "Start") {
                     $TimePrimary[] = $item['TmSplit1'].".".$item['TmSplit1dc'];
@@ -121,12 +129,14 @@ if ($ParametersComplete) {
             # Sort the arrays with the last time first
             array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary);
         } else {
-            echo "Unable to fetch primary times, check the PrimaryID!";
-            exit;
+            #echo "Unable to fetch primary times, check the PrimaryID!";
+            #exit;
+            $PrimaryURLCheck = false;
         }
     } else {
-        echo "Unable to fetch primary times, check the PrimaryID!";
-        exit;
+        #echo "Unable to fetch primary times, check the PrimaryID!";
+        #exit;
+        $PrimaryURLCheck = false;
     }
 
 
@@ -143,11 +153,15 @@ if ($ParametersComplete) {
             $BibSecondary = [];
             $NameSecondary = [];
             $TimeSecondary = [];
+            $CatSecondary = [];
 
             # Fill Bib,Name, Time as separate arrays
             foreach($json as $item) {
                 $BibSecondary[] = $item['Bib'];
                 $NameSecondary[] = $item['Name'];
+                $CatSecondary[] = $item['Cat'];
+
+                # Fetch start times and combine with the decimal values to 00:00:00.0 format
                 if ($Location == "Start") {
                     $TimeSecondary[] = $item['TmSplit1'].".".$item['TmSplit1dc'];
                 } else {
@@ -155,23 +169,49 @@ if ($ParametersComplete) {
                 }
             }
         } else {
-            echo "Unable to fetch secondary times, check the SecondaryID!";
-            exit;
+            #echo "Unable to fetch secondary times, check the SecondaryID!";
+            #exit;
+            $SecondaryURLCheck = false;
         }
     } else {
-        echo "Unable to fetch secondary times, check the SecondaryID!";
-        exit;
+        #echo "Unable to fetch secondary times, check the SecondaryID!";
+        #exit;
+        $SecondaryURLCheck = false;
     }
 
 
     # If the request number of results is higher than the actual results, match it
-    if ($Number > count($BibPrimary)) {
-        $Number = count($BibPrimary);
+    if ($PrimaryURLCheck) {
+        if ($Number > count($BibPrimary)) {
+            $Number = count($BibPrimary);
+        }
     }
-
 
     # Show header
     include_once 'header.html';
+
+    # Check if Primary and Secondary lists are in sync
+    $ListsInSyncCountCheck = true;
+    $ListsInSyncBibCheck = true;
+    $ListsInSyncCatCheck = true;
+
+    if ($PrimaryURLCheck && $SecondaryURLCheck) {
+        $ListsInSync = true;
+        If (count($BibPrimary) != count($BibSecondary)) {
+            $ListsInSync = false;
+            $ListsInSyncCountCheck = false;
+        }
+        for ($Counter = 0; $Counter < count($BibPrimary); $Counter++) {
+            if ($BibPrimaryUnsorted[$Counter] != $BibSecondary[$Counter]) {
+                $ListsInSync = false;
+                $ListsInSyncBibCheck = false;
+            }
+            if ($CatPrimary[$Counter] != $CatSecondary[$Counter]) {
+                $ListsInSync = false;
+                $ListsInSyncCatCheck = false;
+            }
+        }
+    }
 
 
     # Show content
@@ -181,44 +221,110 @@ if ($ParametersComplete) {
           echo "<div class='col-md-10 col-lg-8'>\n";
             echo "<div class='card shadow-lg rounded-4'>\n";
               echo "<div class='card-body'>\n";
-                echo "<h3 class='card-title text-center mb-4'>".$TitlePrimary." / ".$TitleSecondary." - ".$Location."</h3>\n";
+                echo "<h3 class='card-title text-center mb-4'>";
+                    if ($PrimaryURLCheck) {
+                        echo $TitlePrimary." / ";
+                    }
+                    if ($SecondaryURLCheck) {
+                        echo $TitleSecondary." / ";
+                    }
+                    echo $Location."<br>";
+
+                    if ($PrimaryURLCheck) {
+                        echo "<button type='button' class='btn btn-success btn-sm'>Primary</button>\n";
+                    } else {
+                        echo "<button type='button' class='btn btn-danger btn-sm'>Primary</button>\n";
+                    }
+                    if ($SecondaryURLCheck) {
+                        echo "&nbsp;<button type='button' class='btn btn-success btn-sm'>Secondary</button>\n";
+                    } else {
+                        echo "&nbsp;<button type='button' class='btn btn-danger btn-sm'>Secondary</button>\n";
+                    }
+
+                    # Show sync status between primary and secondary lists
+                    if ($ListsInSync) {
+                        echo "&nbsp;<button type='button' class='btn btn-success btn-sm'>\n";
+                    } else {
+                        echo "&nbsp;<button type='button' class='btn btn-danger btn-sm'>\n";
+                    }
+                    echo "List Sync";
+                    echo "</button>";
+
+                    echo "</h3>\n";
+
+
+        if (!$PrimaryURLCheck || !$SecondaryURLCheck || !$ListsInSync) {
+
+                echo "<div class='table-responsive'>\n";
+                  echo "<table class='table table-bordered table-striped text-center align-middle'>\n";
+                    echo "<thead class='table-dark'>\n";
+                      echo "<tr>\n";
+                        echo "<th>Warning message(s)</th>\n";
+                      echo "</tr>\n";
+                    echo "</thead>\n";
+                    echo "<tbody>\n";
+            # Show warning messages
+            if (!$PrimaryURLCheck) {
+                echo "<tr><td>Unable to fetch results for primary URL!</td></tr>\n";
+            }
+            if (!$SecondaryURLCheck) {
+                echo "<tr><td>Unable to fetch results for secondary URL!</td></tr>\n";
+            }
+            if (!$ListsInSyncCountCheck) {
+                echo "<tr><td>There is a difference between the number of contestants for the primary and secondary lists!</td></tr>\n";
+            }
+            if (!$ListsInSyncBibCheck) {
+                echo "<tr><td>There is a difference between the Bib numbers for the primary and secondary lists</td></tr>\n";
+            }
+            if (!$ListsInSyncCatCheck) {
+                echo "<tr><td>There is a difference between the Category names for the primary and secondary lists</td></tr>\n";
+            }
+            echo "</tbody>\n";
+            echo "</table>\n";
+
+        }
+
+
+    if ($PrimaryURLCheck && $SecondaryURLCheck) {
+
                 echo "<div class='table-responsive'>\n";
                   echo "<table class='table table-bordered table-striped text-center align-middle'>\n";
                     echo "<thead class='table-dark'>\n";
                       echo "<tr>\n";
                         echo "<th>#</th>\n";
                         echo "<th>Name</th>\n";
-                        echo "<th>Pimary</th>\n";
-                        echo "<th>Secundary</th>\n";
+                        echo "<th>Primary</th>\n";
+                        echo "<th>Secondary</th>\n";
                         echo "<th>Deviation</th>\n";
                       echo "</tr>\n";
                     echo "</thead>\n";
                     echo "<tbody>\n";
 
-    for ($Counter = 0; $Counter < $Number; $Counter++) {
-        # Find the matching secondary time
-        $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);
-        
-        $PrimaryTimeSplit = explode(":",$TimePrimary[$Counter]);
-        $SecondaryTimeSplit = explode(":",$TimeSecondary[$SearchTime]);
-        $TimeDifference = round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1);
+        for ($Counter = 0; $Counter < $Number; $Counter++) {
+            # Find the matching secondary time
+            $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);
+            
+            $PrimaryTimeSplit = explode(":",$TimePrimary[$Counter]);
+            $SecondaryTimeSplit = explode(":",$TimeSecondary[$SearchTime]);
+            $TimeDifference = round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1);
 
-        if (($MaxDeviation > 0) && ($TimePrimary[$Counter] != "00:00:00.0") && ($TimeSecondary[$SearchTime] != "00:00:00.0")) {
-            if (abs($TimeDifference) > $MaxDeviation) {    
-              echo "<tr class='table-danger'>\n";
+            if (($MaxDeviation > 0) && ($TimePrimary[$Counter] != "00:00:00.0") && ($TimeSecondary[$SearchTime] != "00:00:00.0")) {
+                if (abs($TimeDifference) > $MaxDeviation) {    
+                  echo "<tr class='table-danger'>\n";
+                } else {
+                  echo "<tr class='table-success'>\n";
+                }
             } else {
-              echo "<tr class='table-success'>\n";
+                echo "<tr>\n";
             }
-        } else {
-            echo "<tr>\n";
-        }
 
-            echo "<td>".$BibPrimary[$Counter]."</td>\n";
-            echo "<td>".$NamePrimary[$Counter]."</td>\n";
-            echo "<td>".$TimePrimary[$Counter]."</td>\n";
-            echo "<td>".$TimeSecondary[$SearchTime]."</td>\n";
-            echo "<td>".$TimeDifference."</td>\n";
-          echo "</tr>\n";
+                echo "<td>".$BibPrimary[$Counter]."</td>\n";
+                echo "<td>".$NamePrimary[$Counter]."</td>\n";
+                echo "<td>".$TimePrimary[$Counter]."</td>\n";
+                echo "<td>".$TimeSecondary[$SearchTime]."</td>\n";
+                echo "<td>".$TimeDifference."</td>\n";
+              echo "</tr>\n";
+        }
     }
 
                     echo "</tbody>\n";
