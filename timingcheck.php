@@ -221,7 +221,7 @@ if ($ParametersComplete) {
           echo "<div class='col-md-10 col-lg-8'>\n";
             echo "<div class='card shadow-lg rounded-4'>\n";
               echo "<div class='card-body'>\n";
-                echo "<h3 class='card-title text-center mb-4'>";
+                echo "<h4 class='card-title text-center mb-4'>";
                     if ($PrimaryURLCheck) {
                         echo $TitlePrimary." / ";
                     }
