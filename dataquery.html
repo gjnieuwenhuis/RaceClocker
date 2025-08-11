@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>RaceClocker Timing Check</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' rel='stylesheet'>
+</head>
+<body class='bg-light d-flex align-items-center' style='height: 100;'>
+    <div class='container'>
+    <div class='row justify-content-center'>
+    <div class='col-md-10 col-lg-8'>
+
+
+<div id="results-container">
+  Loading data...
+</div>
+
+<script>
+$(document).ready(function() {
+  const jsonDataUrl = "<?php echo $JSONURL;?>" ;
+
+  function loadData() {
+    $.getJSON(jsonDataUrl, function(data) {
+      $("#results-container").empty();
+
+      let titlePrimary = "";
+      let titleSecondary = "";
+      let location = "";
+      let maxDeviation = "";
+      let primaryURLStatus = "";
+      let secondaryURLStatus = "";
+      let listsInSyncStatus = "";
+      
+
+      $.each(data, function(i, item) {
+        if(item.PrimaryTitle) {
+          titlePrimary = item.PrimaryTitle;
+        }
+        if(item.SecondaryTitle) {
+          titleSecondary = item.SecondaryTitle;
+        }
+        if(item.Location) {
+          location = item.Location;
+        }
+        if(item.MaxDeviation) {
+          maxDeviation = item.MaxDeviation;
+        }       
+        if(item.PrimaryURLStatus) {
+          primaryURLStatus = item.PrimaryURLStatus;
+        }
+        if(item.SecondaryURLStatus) {
+          secondaryURLStatus = item.SecondaryURLStatus;
+        }
+        if(item.ListsInSyncStatus) {
+          listsInSyncStatus = item.ListsInSyncStatus;
+        }  
+      });
+
+        let tableHtml = `<div class='card shadow-lg rounded-4'>`;
+        tableHtml += `<div class='card-body'>`;
+        tableHtml += `<h4 class='card-title text-center mb-4'>${titlePrimary}  / ${titleSecondary} / ${location}<br>`;
+
+        if (primaryURLStatus.includes('OK')) {
+            tableHtml += `<button type='button' class='btn btn-success btn-sm'>Primary</button>`
+            ;
+        } else {
+            tableHtml += `<button type='button' class='btn btn-danger btn-sm'>Primary</button>`
+            ;          
+        }
+
+        if (secondaryURLStatus.includes('OK')) {
+            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm'>Secondary</button>`
+            ;
+        } else {
+            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm'>Secondary</button>`
+            ;          
+        }        
+
+        if (listsInSyncStatus.includes('OK')) {
+            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm'>List Sync</button></h4>`
+            ;
+        } else {
+            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm'>List Sync</button></h4>`
+           ;          
+        }
+
+      tableHtml += `
+        <div class='table-responsive'>
+<table class='table table-bordered table-striped text-center align-middle'>
+<thead class='table-dark'>
+            <tr>`;
+
+        if (listsInSyncStatus.includes('OK')) {
+              tableHtml += `<th>Bib</th>
+              <th>Name</th>
+              <th>Primary</th>
+              <th>Secondary</th>
+              <th>Deviation</th>`;
+              tableHtml += `</tr></thead><tbody>`;
+        } else {
+              tableHtml += `<th>Error(s)</th>`;
+              tableHtml += `</tr></thead><tbody>`;
+        }
+
+      $.each(data, function(i, item) {
+        if(item.Results) {
+            let r = item.Results;
+            let Deviation = Math.abs(r.Deviation);
+            if (Deviation) {
+                if (Deviation > maxDeviation) {
+                    tableHtml += `<tr class='table-danger'>`;
+                } else {
+                    tableHtml += `<tr class='table-success'>`;
+                }
+            }
+
+          tableHtml += `
+              <td>${r.Bib || ""}</td>
+              <td>${r.Name || ""}</td>
+              <td>${r.Primary || ""}</td>
+              <td>${r.Secondary || ""}</td>
+              <td>${r.Deviation || ""}</td>
+            </tr>`;
+
+        } else {
+            if (item.Error) {
+              tableHtml += `
+              <td>${item.Error || ""}</td>
+              </tr>`;
+            }
+        }
+      });
+
+      let version = "<?php echo $Version;?>";
+      tableHtml += "</tbody></table></div></div>";
+
+      tableHtml += "<div class='card-footer text-muted'>RaceClocker Timing Check "
+      tableHtml += version;
+      tableHtml += "</div><!-- card-footer text-muted -->";
+      tableHtml += "</div><!-- card-body -->";
+      tableHtml += "</div><!-- card shadow-lg rounded-4 -->";
+      tableHtml += "</div><!-- col-md-10 col-lg-8 -->";
+      tableHtml += "</div><!-- row justify-content-center -->";
+      tableHtml += "</div><!-- container -->";
+
+      $("#results-container").append(tableHtml);
+    }).fail(function() {
+      $("#results-container").html("Failed to load data.");
+    });
+  }
+
+  // Initial load
+  loadData();
+
+  // Reload every x seconds as specified by Refresh
+  $.getJSON(jsonDataUrl, function(data) {
+      let refreshDelay = "";
+      $.each(data, function(i, item) {
+        if(item.Refresh) {
+          refreshDelay = (item.Refresh) * 1000;
+        }        
+      });
+      setInterval(loadData, refreshDelay);
+  });
+  
+});
+</script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'></script>
+</body>
+</html>
