@@ -5,8 +5,9 @@
 
 # 2025-08-09 v0.1 Initial version
 # 2025-08-10 v0.2 Added data for primary/secondary URL check and Lists in Sync
+# 2025-08-13 v0.3 Make time difference always positive and present as string for JSON data
 
-$Version = "0.2";
+$Version = "v0.3";
 
 $JSONData = [];
 
@@ -14,6 +15,10 @@ $JSONData = [];
 
 # We start with true and set to false if any check fails
 $ParametersComplete = true;
+
+# Return JSONData script version
+$JSONMsg = array('JSONVersion' => $Version);
+$JSONData[] = $JSONMsg;
 
 # Fetch Location, only "Start" or "Finish" is allowed
 if (isset($_GET['Location']) && !empty($_GET['Location'])) {
@@ -281,7 +286,7 @@ if ($ParametersComplete) {
             
             $PrimaryTimeSplit = explode(":",$TimePrimary[$Counter]);
             $SecondaryTimeSplit = explode(":",$TimeSecondary[$SearchTime]);
-            $TimeDifference = round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1);
+            $TimeDifference = strval(abs(round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1)));
 
             # Add data to JSON array
             $NewData = ['Results' => ['Bib' => $BibPrimary[$Counter], 'Name' => $NamePrimary[$Counter], 'Primary' => $TimePrimary[$Counter], 'Secondary' => $TimeSecondary[$SearchTime], 'Deviation' => $TimeDifference]]; 

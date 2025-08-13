@@ -34,6 +34,9 @@ $(document).ready(function() {
       
 
       $.each(data, function(i, item) {
+        if(item.JSONVersion) {
+          JSONVersion = item.JSONVersion;
+        }       
         if(item.PrimaryTitle) {
           titlePrimary = item.PrimaryTitle;
         }
@@ -106,13 +109,16 @@ $(document).ready(function() {
       $.each(data, function(i, item) {
         if(item.Results) {
             let r = item.Results;
-            let Deviation = Math.abs(r.Deviation);
-            if (Deviation) {
-                if (Deviation > maxDeviation) {
-                    tableHtml += `<tr class='table-danger'>`;
-                } else {
-                    tableHtml += `<tr class='table-success'>`;
-                }
+            if (r.Deviation) {
+              if (r.Primary != "00:00:00.0") {
+                  if (r.Deviation > maxDeviation) {
+                      tableHtml += `<tr class='table-danger'>`;
+                  } else {
+                      tableHtml += `<tr class='table-success'>`;
+                  }
+              } else {
+                  tableHtml += `<tr>`;
+              }
             }
 
           tableHtml += `
@@ -137,6 +143,8 @@ $(document).ready(function() {
 
       tableHtml += "<div class='card-footer text-muted'>RaceClocker Timing Check "
       tableHtml += version;
+      tableHtml += " / JSON version ";
+      tableHtml += JSONVersion;
       tableHtml += "</div><!-- card-footer text-muted -->";
       tableHtml += "</div><!-- card-body -->";
       tableHtml += "</div><!-- card shadow-lg rounded-4 -->";
