@@ -110,7 +110,7 @@ $(document).ready(function() {
         if(item.Results) {
             let r = item.Results;
             if (r.Deviation) {
-              if (r.Primary != "00:00:00.0") {
+              if (r.Primary != "00:00:00.0" && r.Secondary != "00:00:00.0") {
                   if (r.Deviation > maxDeviation) {
                       tableHtml += `<tr class='table-danger'>`;
                   } else {

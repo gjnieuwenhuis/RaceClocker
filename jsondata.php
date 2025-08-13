@@ -248,7 +248,7 @@ if ($ParametersComplete) {
             $JSONData[] = $StatusMsg;
         }
         if (!$ListsInSyncCountCheck) {
-            $ErrorMsg = array('Error' => 'There is a difference between the number of contestants for the primary and secondary lists');
+            $ErrorMsg = array('Error' => 'There is a difference between the number of entries for the primary and secondary lists');
             $JSONData[] = $ErrorMsg;
             $StatusMsg = array('ListsInSyncCountStatus' => 'Failed');
             $JSONData[] = $StatusMsg;
