@@ -9,6 +9,7 @@
 
 $Version = "v0.3";
 
+# Create empty JSON array
 $JSONData = [];
 
 # Get all required parameters
@@ -16,7 +17,7 @@ $JSONData = [];
 # We start with true and set to false if any check fails
 $ParametersComplete = true;
 
-# Return JSONData script version
+# Return JSONData script version in JSON data
 $JSONMsg = array('JSONVersion' => $Version);
 $JSONData[] = $JSONMsg;
 
@@ -95,12 +96,14 @@ if ($ParametersComplete) {
     $PrimaryURL = "https://raceclocker.com/".$PrimaryID."?json=1";
     $SecondaryURL = "https://raceclocker.com/".$SecondaryID."?json=1";
 
+    # Fetch URL contents to scrape the race titles
     $TimesPrimary = file_get_contents($PrimaryURL);
     $TimesSecondary =file_get_contents($SecondaryURL);
+    # Set URL check flags
     $PrimaryURLCheck = true;
     $SecondaryURLCheck = true;
 
-    # Fetch the RaceClocker names for the primary race
+    # Fetch the RaceClocker names for the primary race from the URL content
     preg_match('/<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']\s*\/?>/i', $TimesPrimary, $TitlePrimaryMatches);
     if (isset($TitlePrimaryMatches[1])) {
         $TitleData= array('PrimaryTitle' => $TitlePrimaryMatches[1]);
@@ -109,7 +112,7 @@ if ($ParametersComplete) {
     }
     $JSONData[] = $TitleData;
 
-    # Fetch the RaceClocker names for the secondary race
+    # Fetch the RaceClocker names for the secondary race from the URL content
     preg_match('/<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']\s*\/?>/i', $TimesSecondary, $TitleSecondaryMatches);
     if (isset($TitleSecondaryMatches[1])) {
         $TitleData= array('SecondaryTitle' => $TitleSecondaryMatches[1]);
