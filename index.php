@@ -11,8 +11,9 @@
 # 2025-08-07 v0.6 Added sync status to check if primairy/secondary lists are the same
 # 2025-08-07 v0.7 Added error messages
 # 2025-08-09 v0.8 Page refresh redone as Jquery and separate php processing for JSON
+# 2025-08-14 v0.8.1 Removed URL content actions as they are handled in the JSON data script
 
-$Version = "v0.8";
+$Version = "v0.8.1";
 
 # Get all required parameters
 
@@ -65,25 +66,9 @@ if (isset($_GET['MaxDeviation']) && !empty($_GET['MaxDeviation']) && is_numeric(
 
 
 if ($ParametersComplete) {
-
-    # Define the primary and secondary URLs to be used
-    $PrimaryURL = "https://raceclocker.com/".$PrimaryID."?json=1";
-    $SecondaryURL = "https://raceclocker.com/".$SecondaryID."?json=1";
-
-    # Fetch URL contents to scrape the titles of the races
-    $TitlePrimary = file_get_contents($PrimaryURL);
-    $TitleSecondary =file_get_contents($SecondaryURL);
-    # Set flags for URL checks
-    $PrimaryURLCheck = true;
-    $SecondaryURLCheck = true;
-     
+    
     # Create URL to be send jsondata.php as we want the compared times returned as JSON data
     $JSONURL = "https://trompbbr.nl/timing/test/jsondata.php?Location=".$Location."&PrimaryID=".$PrimaryID."&SecondaryID=".$SecondaryID."&Number=".$Number."&MaxDeviation=".$MaxDeviation."&Refresh=".$Refresh;
-
-    # PHP example below to fetch the JSON data
-    # $JSONcontents = file_get_contents($JSONURL);
-    # $JSONcontents = utf8_encode($JSONcontents);
-    # $JSONData = json_decode($JSONcontents); 
   
     # jQuery script to fetch and show data
     include_once 'dataquery.html';
