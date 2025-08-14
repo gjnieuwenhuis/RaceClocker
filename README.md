@@ -15,3 +15,5 @@ A typical example would be: https://yourwebsite.com/index.php?Location=Start&Pri
 
 If you would like to interpret the JSON data yourself, simply call the jsondata.php direcly with the same parameters
 https://yourwebsite.com/jsondata.php?Location=Start&PrimaryID=b4e0c99a&SecondaryID=b4e0c99b&Refresh=10&MaxDeviation=0.5&Number=10
+
+Feel free to suggest improvements or report bugs!
