@@ -70,8 +70,10 @@ if ($ParametersComplete) {
     $PrimaryURL = "https://raceclocker.com/".$PrimaryID."?json=1";
     $SecondaryURL = "https://raceclocker.com/".$SecondaryID."?json=1";
 
+    # Fetch URL contents to scrape the titles of the races
     $TitlePrimary = file_get_contents($PrimaryURL);
     $TitleSecondary =file_get_contents($SecondaryURL);
+    # Set flags for URL checks
     $PrimaryURLCheck = true;
     $SecondaryURLCheck = true;
      
@@ -82,15 +84,11 @@ if ($ParametersComplete) {
     # $JSONcontents = file_get_contents($JSONURL);
     # $JSONcontents = utf8_encode($JSONcontents);
     # $JSONData = json_decode($JSONcontents); 
-
   
     # jQuery script to fetch and show data
     include_once 'dataquery.html';
-
-
 } else {
-
-    # Required parameters are missing or wrong, show usage page
+    # Required parameters are missing or wrong, show usage/help page
     include_once 'usage.html';
 }
 
