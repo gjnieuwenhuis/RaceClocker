@@ -7,9 +7,11 @@ Simply copy all 4 files to the PHP webserver of your choice or clone this reposi
 
 **Usage**
 
-Running the script without any parameters in the URL will provide you with the help page usage.html
-index.php is an exmaple script which handles the parameter validation and pushes the parameters to dataquery.html
-dataquery.html will use jsondata.php to fetch both the primary and secondary race results
+Running the script without any parameters in the URL will provide you with the help page usage.html.
+
+Index.php is an example script which handles the parameter validation and pushes the parameters to dataquery.html.
+
+Dataquery.html will use jsondata.php to fetch both the primary and secondary race results.
 
 A typical example would be: https://yourwebsite.com/index.php?Location=Start&PrimaryID=b4e0c99a&SecondaryID=b4e0c99b&Refresh=10&MaxDeviation=0.5&Number=10
 
