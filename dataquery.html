@@ -21,6 +21,9 @@ $(document).ready(function() {
   const jsonDataUrl = "<?php echo $JSONURL;?>" ;
 
   function loadData() {
+
+    let startTime = performance.now();
+
     $.getJSON(jsonDataUrl, function(data) {
       $("#results-container").empty();
 
@@ -138,13 +141,18 @@ $(document).ready(function() {
         }
       });
 
+      let endTime = performance.now();
       let version = "<?php echo $Version;?>";
+      let timeTaken = Math.round(endTime - startTime);
       tableHtml += "</tbody></table></div></div>";
 
       tableHtml += "<div class='card-footer text-muted'>RaceClocker Timing Check "
       tableHtml += version;
-      tableHtml += " / JSON version ";
+      tableHtml += " / JSON version: ";
       tableHtml += JSONVersion;
+      tableHtml += " / Exec time: ";
+      tableHtml += timeTaken;
+      tableHtml += " milliseconds";      
       tableHtml += "</div><!-- card-footer text-muted -->";
       tableHtml += "</div><!-- card-body -->";
       tableHtml += "</div><!-- card shadow-lg rounded-4 -->";
