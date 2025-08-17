@@ -1,5 +1,5 @@
 # RaceClocker
-PHP scripts for RaceClocker (https://raceclocker.com) in the event where on the Start/Finish primary and backup times are being used and either the timing crew would like to quickly compare the time difference.
+PHP scripts for RaceClocker (https://raceclocker.com) in the event where on the Start/Finish primary and backup times are being used and the timing crew would like to quickly compare the time difference.
 
 **Installation**
 
