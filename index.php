@@ -12,8 +12,9 @@
 # 2025-08-07 v0.7 Added error messages
 # 2025-08-09 v0.8 Page refresh redone as Jquery and separate php processing for JSON
 # 2025-08-14 v0.8.1 Removed URL content actions as they are handled in the JSON data script
+# 2025-08-17 v0.8.2 Added execution time in dataquery.html
 
-$Version = "v0.8.1";
+$Version = "v0.8.2";
 
 # Get all required parameters
 
