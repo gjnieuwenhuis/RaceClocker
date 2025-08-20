@@ -68,26 +68,26 @@ $(document).ready(function() {
         tableHtml += `<h4 class='card-title text-center mb-4'>${titlePrimary}  / ${titleSecondary} / ${location}<br>`;
 
         if (primaryURLStatus.includes('OK')) {
-            tableHtml += `<button type='button' class='btn btn-success btn-sm'>Primary</button>`
+            tableHtml += `<button type='button' class='btn btn-success btn-sm disabled'>Primary</button>`
             ;
         } else {
-            tableHtml += `<button type='button' class='btn btn-danger btn-sm'>Primary</button>`
+            tableHtml += `<button type='button' class='btn btn-danger btn-sm disabled'>Primary</button>`
             ;          
         }
 
         if (secondaryURLStatus.includes('OK')) {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm'>Secondary</button>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>Secondary</button>`
             ;
         } else {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm'>Secondary</button>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm disabled'>Secondary</button>`
             ;          
         }        
 
         if (listsInSyncStatus.includes('OK')) {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm'>List Sync</button></h4>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>List Sync</button></h4>`
             ;
         } else {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm'>List Sync</button></h4>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm disabled'>List Sync</button></h4>`
            ;          
         }
 
