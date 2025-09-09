@@ -3,11 +3,12 @@
 # RaceClocker Timing JSON formatter
 # Copyright G.J.Nieuwenhuis 2025
 
-# 2025-08-09 v0.1 Initial version
-# 2025-08-10 v0.2 Added data for primary/secondary URL check and Lists in Sync
-# 2025-08-13 v0.3 Make time difference always positive and present as string for JSON data
+# 2025-08-09 v0.1   Initial version
+# 2025-08-10 v0.2   Added data for primary/secondary URL check and Lists in Sync
+# 2025-08-13 v0.3   Make time difference always positive and present as string for JSON data
+# 2025-09-09 v0.3.1 Minor correction for list sync to skip secondary check if there is no value available
 
-$Version = "v0.3";
+$Version = "v0.3.1";
 
 # Create empty JSON array
 $JSONData = [];
@@ -223,13 +224,17 @@ if ($ParametersComplete) {
             $ListsInSyncCountCheck = false;
         }
         for ($Counter = 0; $Counter < count($BibPrimary); $Counter++) {
-            if ($BibPrimaryUnsorted[$Counter] != $BibSecondary[$Counter]) {
-                $ListsInSync = false;
-                $ListsInSyncBibCheck = false;
+            if (isset($BibSecondary[$Counter])) {
+                if ($BibPrimaryUnsorted[$Counter] != $BibSecondary[$Counter]) {
+                    $ListsInSync = false;
+                    $ListsInSyncBibCheck = false;
+                }
             }
-            if ($CatPrimary[$Counter] != $CatSecondary[$Counter]) {
-                $ListsInSync = false;
-                $ListsInSyncCatCheck = false;
+            if (isset($CatSecondary[$Counter])) {
+                if ($CatPrimary[$Counter] != $CatSecondary[$Counter]) {
+                    $ListsInSync = false;
+                    $ListsInSyncCatCheck = false;
+                }
             }
         }
     }
