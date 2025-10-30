@@ -151,6 +151,7 @@ if ($ParametersComplete) {
             $BlockPrimary = [];
 
             # Fill Bib,Name, Time as separate arrays
+            $BlockDataFound = false;
             foreach($json as $item) {
                 $BibPrimary[] = $item['Bib'];
                 $BibPrimaryUnsorted[] = $item['Bib'];
@@ -158,9 +159,10 @@ if ($ParametersComplete) {
                 $CatPrimary[] = $item['Cat'];
                 $CatPrimaryUnsorted[] = $item['Cat'];
                 foreach ($item['ExtraInfo'] as $info) {
-                    if ($info[0] === 'Blok' || $info[0] === 'Block') {
-                        if (preg_match('/(?:block|blok)\s+(\d+)/', $info[1], $matches)) {
+                    if ($info[0] === 'Blok') {
+                        if (preg_match('/Blok\s+(\d+)/', $info[1], $matches)) {
                             $BlockPrimary[] = $matches[1];
+                            $BlockDataFound = true;
                         }
 
                         break;
@@ -177,7 +179,7 @@ if ($ParametersComplete) {
             }
 
             # Sort the arrays with the last time first
-            if ($BlockFilterFlag) {
+            if ($BlockDataFound) {
                 array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary,$BlockPrimary);
             } else {
                 array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary);
