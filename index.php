@@ -69,7 +69,7 @@ if (isset($_GET['MaxDeviation']) && !empty($_GET['MaxDeviation']) && is_numeric(
 if ($ParametersComplete) {
     
     # Create URL to be send jsondata.php as we want the compared times returned as JSON data
-    $JSONURL = "https://trompbbr.nl/timing/test/jsondata.php?Location=".$Location."&PrimaryID=".$PrimaryID."&SecondaryID=".$SecondaryID."&Number=".$Number."&MaxDeviation=".$MaxDeviation."&Refresh=".$Refresh;
+    $JSONURL = "./jsondata.php?Location=".$Location."&PrimaryID=".$PrimaryID."&SecondaryID=".$SecondaryID."&Number=".$Number."&MaxDeviation=".$MaxDeviation."&Refresh=".$Refresh;
   
     # jQuery script to fetch and show data
     include_once 'dataquery.html';
