@@ -13,8 +13,9 @@
 # 2025-08-09 v0.8 Page refresh redone as Jquery and separate php processing for JSON
 # 2025-08-14 v0.8.1 Removed URL content actions as they are handled in the JSON data script
 # 2025-08-17 v0.8.2 Added execution time in dataquery.html
+# 2025-10-20 v0.9 Added support to filter on Block number / changed to relative path for jsondata.php
 
-$Version = "v0.8.2";
+$Version = "v0.9";
 
 # Get all required parameters
 
@@ -65,11 +66,16 @@ if (isset($_GET['MaxDeviation']) && !empty($_GET['MaxDeviation']) && is_numeric(
     $ParametersComplete = false;
 }
 
-
 if ($ParametersComplete) {
     
-    # Create URL to be send jsondata.php as we want the compared times returned as JSON data
     $JSONURL = "./jsondata.php?Location=".$Location."&PrimaryID=".$PrimaryID."&SecondaryID=".$SecondaryID."&Number=".$Number."&MaxDeviation=".$MaxDeviation."&Refresh=".$Refresh;
+
+    # Add optional filtering parameters to the JSON request
+    # Fetch block number for filtering results
+    if (isset($_GET['Block']) && !empty($_GET['Block']) && is_numeric($_GET['Block'])) {
+        $JSONURL = $JSONURL . "&Block=" . $_GET['Block'];
+    }
+
   
     # jQuery script to fetch and show data
     include_once 'dataquery.html';

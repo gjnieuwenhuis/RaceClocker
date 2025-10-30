@@ -34,6 +34,7 @@ $(document).ready(function() {
       let primaryURLStatus = "";
       let secondaryURLStatus = "";
       let listsInSyncStatus = "";
+      let validResults = "";
       
 
       $.each(data, function(i, item) {
@@ -60,7 +61,11 @@ $(document).ready(function() {
         }
         if(item.ListsInSyncStatus) {
           listsInSyncStatus = item.ListsInSyncStatus;
-        }  
+        }
+        if(item.ValidResults) {
+          validResults = item.ValidResults;
+        } 
+
       });
 
         let tableHtml = `<div class='card shadow-lg rounded-4'>`;
@@ -84,12 +89,14 @@ $(document).ready(function() {
         }        
 
         if (listsInSyncStatus.includes('OK')) {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>List Sync</button></h4>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>List Sync</button>`
             ;
         } else {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm disabled'>List Sync</button></h4>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm disabled'>List Sync</button>`
            ;          
         }
+
+        tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>Results: ${validResults}</button></h4>`
 
       tableHtml += `
         <div class='table-responsive'>
@@ -99,6 +106,8 @@ $(document).ready(function() {
 
         if (listsInSyncStatus.includes('OK')) {
               tableHtml += `<th>Bib</th>
+              <th>Block</th>
+              <th>Category</th>
               <th>Name</th>
               <th>Primary</th>
               <th>Secondary</th>
@@ -126,6 +135,8 @@ $(document).ready(function() {
 
           tableHtml += `
               <td>${r.Bib || ""}</td>
+              <td>${r.Block || ""}</td>
+              <td>${r.Cat || ""}</td>
               <td>${r.Name || ""}</td>
               <td>${r.Primary || ""}</td>
               <td>${r.Secondary || ""}</td>

@@ -7,8 +7,10 @@
 # 2025-08-10 v0.2   Added data for primary/secondary URL check and Lists in Sync
 # 2025-08-13 v0.3   Make time difference always positive and present as string for JSON data
 # 2025-09-09 v0.3.1 Minor correction for list sync to skip secondary check if there is no value available
+# 2025-10-18 V0.3.2 Added category and block data field, fix for correct check of category fields, added ValidResults for the number of results
+# 2025-10-20 v0.3.3 Added support for filtering on Block
 
-$Version = "v0.3.1";
+$Version = "v0.3.3";
 
 # Create empty JSON array
 $JSONData = [];
@@ -90,6 +92,14 @@ if (isset($_GET['Refresh']) && !empty($_GET['Refresh']) && is_numeric($_GET['Ref
     $JSONData[] = $ErrorMsg;
 }
 
+# Optional parameters for filtering results
+$BibFilterFlag = $BlockFilterFlag = $CatFilterFlag = false;
+# Fetch block number for filtering results
+if (isset($_GET['Block']) && !empty($_GET['Block']) && is_numeric($_GET['Block'])) {
+    $BlockFilter = $_GET['Block'];
+    $BlockFilterFlag = true;
+}
+
 # Proceed if we have all required parameters
 if ($ParametersComplete) {
 
@@ -137,13 +147,26 @@ if ($ParametersComplete) {
             $NamePrimary = [];
             $TimePrimary = [];
             $CatPrimary = [];
+            $CatPrimaryunsorted = [];
+            $BlockPrimary = [];
 
-            # Fill Bib,Name, Time as separate arrays 
+            # Fill Bib,Name, Time as separate arrays
             foreach($json as $item) {
                 $BibPrimary[] = $item['Bib'];
                 $BibPrimaryUnsorted[] = $item['Bib'];
                 $NamePrimary[] = $item['Name'];
                 $CatPrimary[] = $item['Cat'];
+                $CatPrimaryUnsorted[] = $item['Cat'];
+                foreach ($item['ExtraInfo'] as $info) {
+                    if ($info[0] === 'Blok' || $info[0] === 'Block') {
+                        if (preg_match('/(?:block|blok)\s+(\d+)/', $info[1], $matches)) {
+                            $BlockPrimary[] = $matches[1];
+                        }
+
+                        break;
+                    }
+                }
+
 
                 # Fetch start times and combine with the decimal values to 00:00:00.0 format
                 if ($Location == "Start") {
@@ -154,7 +177,11 @@ if ($ParametersComplete) {
             }
 
             # Sort the arrays with the last time first
-            array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary);
+            if ($BlockFilterFlag) {
+                array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary,$BlockPrimary);
+            } else {
+                array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary);
+            }
 
             $StatusMsg = array('PrimaryURLStatus' => 'OK');
             $JSONData[] = $StatusMsg;
@@ -193,6 +220,7 @@ if ($ParametersComplete) {
                 } else {
                     $TimeSecondary[] = $item['TmSplit5'].".".$item['TmSplit5dc'];
                 }
+
             }
             $StatusMsg = array('SecondaryURLStatus' => 'OK');
             $JSONData[] = $StatusMsg;
@@ -231,7 +259,7 @@ if ($ParametersComplete) {
                 }
             }
             if (isset($CatSecondary[$Counter])) {
-                if ($CatPrimary[$Counter] != $CatSecondary[$Counter]) {
+                if ($CatPrimaryUnsorted[$Counter] != $CatSecondary[$Counter]) {
                     $ListsInSync = false;
                     $ListsInSyncCatCheck = false;
                 }
@@ -287,8 +315,32 @@ if ($ParametersComplete) {
 
     # Are all checks valid? Generate JSON output
     if ($PrimaryURLCheck && $SecondaryURLCheck && $ListsInSync) {
+
+        # Count number of valid results
+        $ValidResults = 0;
+        for ($Counter = 0; $Counter < $Number; $Counter++) {
+            if ($BlockFilterFlag) {
+                if ($BlockPrimary[$Counter] == $BlockFilter) {
+                    # Find the matching secondary time
+                    $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);     
+                    if ($TimePrimary[$Counter] !== "00:00:00.0" || $TimeSecondary[$SearchTime] !== "00:00:00.0") {
+                        $ValidResults++;
+                    }
+                }
+            } else {
+                 # Find the matching secondary time
+                $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);     
+                if ($TimePrimary[$Counter] !== "00:00:00.0" || $TimeSecondary[$SearchTime] !== "00:00:00.0") {
+                    $ValidResults++;
+                }               
+            }
+
+        }
+        $ValidResultsData = array('ValidResults' => $ValidResults);
+        $JSONData[] = $ValidResultsData;
           
         for ($Counter = 0; $Counter < $Number; $Counter++) {
+
             # Find the matching secondary time
             $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);
             
@@ -297,8 +349,15 @@ if ($ParametersComplete) {
             $TimeDifference = strval(abs(round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1)));
 
             # Add data to JSON array
-            $NewData = ['Results' => ['Bib' => $BibPrimary[$Counter], 'Name' => $NamePrimary[$Counter], 'Primary' => $TimePrimary[$Counter], 'Secondary' => $TimeSecondary[$SearchTime], 'Deviation' => $TimeDifference]]; 
-            $JSONData[] = $NewData;
+            if ($BlockFilterFlag) {
+                if ($BlockPrimary[$Counter] == $BlockFilter) {
+                    $NewData = ['Results' => ['Bib' => $BibPrimary[$Counter], 'Block' => $BlockPrimary[$Counter], 'Cat' => $CatPrimary[$Counter], 'Name' => $NamePrimary[$Counter], 'Primary' => $TimePrimary[$Counter], 'Secondary' => $TimeSecondary[$SearchTime], 'Deviation' => $TimeDifference]]; 
+                    $JSONData[] = $NewData;
+                }
+            } else {
+                $NewData = ['Results' => ['Bib' => $BibPrimary[$Counter], 'Block' => $BlockPrimary[$Counter], 'Cat' => $CatPrimary[$Counter], 'Name' => $NamePrimary[$Counter], 'Primary' => $TimePrimary[$Counter], 'Secondary' => $TimeSecondary[$SearchTime], 'Deviation' => $TimeDifference]]; 
+                $JSONData[] = $NewData;
+            }
 
         }
     }
