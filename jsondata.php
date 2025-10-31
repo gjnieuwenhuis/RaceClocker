@@ -159,8 +159,8 @@ if ($ParametersComplete) {
                 $CatPrimary[] = $item['Cat'];
                 $CatPrimaryUnsorted[] = $item['Cat'];
                 foreach ($item['ExtraInfo'] as $info) {
-                    if ($info[0] === 'Blok') {
-                        if (preg_match('/Blok\s+(\d+)/', $info[1], $matches)) {
+                    if (($info[0] === 'Blok') || ($info[0] === 'Block')) {
+                        if (preg_match('/\b(?:Blok|Block)\s+(\d+)/i', $info[1], $matches)) {
                             $BlockPrimary[] = $matches[1];
                             $BlockDataFound = true;
                         }
@@ -348,7 +348,8 @@ if ($ParametersComplete) {
             
             $PrimaryTimeSplit = explode(":",$TimePrimary[$Counter]);
             $SecondaryTimeSplit = explode(":",$TimeSecondary[$SearchTime]);
-            $TimeDifference = strval(abs(round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1)));
+            $TimeDifference = strval((round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1)));
+
 
             # Add data to JSON array
             if ($BlockFilterFlag) {
