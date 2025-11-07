@@ -348,7 +348,8 @@ if ($ParametersComplete) {
             
             $PrimaryTimeSplit = explode(":",$TimePrimary[$Counter]);
             $SecondaryTimeSplit = explode(":",$TimeSecondary[$SearchTime]);
-            $TimeDifference = strval((round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1)));
+            #$TimeDifference = strval((round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1)));
+            $TimeDifference = strval((round(((($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2]) - (($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2])),1)));
 
 
             # Add data to JSON array
