@@ -90,7 +90,12 @@ $(document).ready(function() {
         }
         if(item.ValidResults) {
           validResults = item.ValidResults;
-        } 
+        } else {
+          validResults = 0;
+        }
+        if(item.AllResults) {
+          allResults = item.AllResults;
+        }         
 
       });
 
@@ -122,7 +127,7 @@ $(document).ready(function() {
            ;          
         }
 
-        tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>Results: ${validResults}</button></h4>`
+        tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>Results: ${validResults}/${allResults}</button></h4>`
 
       tableHtml += `
         <div class='table-responsive'>
@@ -149,7 +154,7 @@ $(document).ready(function() {
             let r = item.Results;
             if (r.Deviation) {
               if (r.Primary != "00:00:00.0" && r.Secondary != "00:00:00.0") {
-                  if (r.Deviation > maxDeviation) {
+                  if (Math.abs(r.Deviation) > maxDeviation) {
                       tableHtml += `<tr class='table-danger'>`;
                   } else {
                       tableHtml += `<tr class='table-success'>`;
@@ -220,6 +225,7 @@ $(document).ready(function() {
       $.each(data, function(i, item) {
         if(item.Refresh) {
           refreshDelay = (item.Refresh) * 1000;
+          console.log("Refresh:",refreshDelay)
         }        
       });
       setInterval(loadData, refreshDelay);

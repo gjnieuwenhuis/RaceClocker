@@ -14,8 +14,9 @@
 # 2025-08-14 v0.8.1 Removed URL content actions as they are handled in the JSON data script
 # 2025-08-17 v0.8.2 Added execution time in dataquery.html
 # 2025-10-20 v0.9 Added support to filter on Block number / changed to relative path for jsondata.php
+# 2025-11-08 v0.9.2 Added AllResults in jsondata.php, corrected deviation bug in dataquery.html to not show red when deviation is negative
 
-$Version = "v0.9";
+$Version = "v0.9.2";
 
 # Get all required parameters
 
@@ -75,8 +76,7 @@ if ($ParametersComplete) {
     if (isset($_GET['Block']) && !empty($_GET['Block']) && is_numeric($_GET['Block'])) {
         $JSONURL = $JSONURL . "&Block=" . $_GET['Block'];
     }
-
-  
+ 
     # jQuery script to fetch and show data
     include_once 'dataquery.html';
 } else {

@@ -1,5 +1,11 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 # RaceClocker Timing JSON formatter
 # Copyright G.J.Nieuwenhuis 2025
 
@@ -9,8 +15,9 @@
 # 2025-09-09 v0.3.1 Minor correction for list sync to skip secondary check if there is no value available
 # 2025-10-18 V0.3.2 Added category and block data field, fix for correct check of category fields, added ValidResults for the number of results
 # 2025-10-20 v0.3.3 Added support for filtering on Block
+# 2025-11-08 v0.3.4 Added AllResults for the total number of results
 
-$Version = "v0.3.3";
+$Version = "v0.3.4";
 
 # Create empty JSON array
 $JSONData = [];
@@ -164,11 +171,9 @@ if ($ParametersComplete) {
                             $BlockPrimary[] = $matches[1];
                             $BlockDataFound = true;
                         }
-
                         break;
                     }
                 }
-
 
                 # Fetch start times and combine with the decimal values to 00:00:00.0 format
                 if ($Location == "Start") {
@@ -318,8 +323,9 @@ if ($ParametersComplete) {
     # Are all checks valid? Generate JSON output
     if ($PrimaryURLCheck && $SecondaryURLCheck && $ListsInSync) {
 
-        # Count number of valid results
+        # Count number of all and valid results
         $ValidResults = 0;
+        $AllResults = 0;
         for ($Counter = 0; $Counter < $Number; $Counter++) {
             if ($BlockFilterFlag) {
                 if ($BlockPrimary[$Counter] == $BlockFilter) {
@@ -328,18 +334,25 @@ if ($ParametersComplete) {
                     if ($TimePrimary[$Counter] !== "00:00:00.0" || $TimeSecondary[$SearchTime] !== "00:00:00.0") {
                         $ValidResults++;
                     }
+                    $AllResults++;
                 }
             } else {
                  # Find the matching secondary time
                 $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);     
                 if ($TimePrimary[$Counter] !== "00:00:00.0" || $TimeSecondary[$SearchTime] !== "00:00:00.0") {
                     $ValidResults++;
-                }               
+                }
+                $AllResults++;            
             }
 
         }
+        # Add Valid results to the JSON data
         $ValidResultsData = array('ValidResults' => $ValidResults);
         $JSONData[] = $ValidResultsData;
+
+        # Add all results to the JSON data
+        $AllResultsData = array('AllResults' => $AllResults);
+        $JSONData[] = $AllResultsData;        
           
         for ($Counter = 0; $Counter < $Number; $Counter++) {
 
