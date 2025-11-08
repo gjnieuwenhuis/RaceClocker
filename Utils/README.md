@@ -7,6 +7,8 @@ Call script with rc2json.php?RaceClockerID=<ResultsID> (replace <ResultsID> with
 The data returned will be the same JSON data as found in the AllResults variable from the results page and will also add the title of the race.
 
 Example JSON (truncated)
+
+
 [
   {
     "JSONVersion": "v0.1"
