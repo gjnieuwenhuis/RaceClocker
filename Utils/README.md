@@ -9,9 +9,13 @@ Call script with rc2json.php?RaceClockerID=ResultsID (replace ResultsID with the
 The data returned will be the same JSON data as found in the AllResults variable from the results page and will also add the title of the race and if the URL returned valid data.
 
 JSONVersion => Returns the version of the script
+
 Title => Returns the title of the race
+
 RaceClockerURLStatus => Returns "OK" or "Failed" depending if the results ID provided returned valid results
+
 Results => The actual timing data
+
 Error => Returns any errors found
 
 
