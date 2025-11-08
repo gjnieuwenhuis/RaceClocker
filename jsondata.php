@@ -15,7 +15,7 @@ header("Expires: 0");
 # 2025-09-09 v0.3.1 Minor correction for list sync to skip secondary check if there is no value available
 # 2025-10-18 V0.3.2 Added category and block data field, fix for correct check of category fields, added ValidResults for the number of results
 # 2025-10-20 v0.3.3 Added support for filtering on Block
-# 2025-11-08 v0.3.4 Added AllResults for the total number of results
+# 2025-11-08 v0.3.4 Added AllResults for the total number of results, deviation will only be calculated if there is both a primary and secondary time
 
 $Version = "v0.3.4";
 
@@ -361,9 +361,12 @@ if ($ParametersComplete) {
             
             $PrimaryTimeSplit = explode(":",$TimePrimary[$Counter]);
             $SecondaryTimeSplit = explode(":",$TimeSecondary[$SearchTime]);
-            #$TimeDifference = strval((round(((($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2])),1)));
-            $TimeDifference = strval((round(((($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2]) - (($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2])),1)));
-
+            # Only calculate the deviation if there is a time for both primary and secondary
+            if (($TimePrimary[$Counter] != "00:00:00.0") && ($TimeSecondary[$SearchTime] != "00:00:00.0")) {
+                $TimeDifference = strval((round(((($SecondaryTimeSplit[0] * 3600) + ($SecondaryTimeSplit[1] * 60) + $SecondaryTimeSplit[2]) - (($PrimaryTimeSplit[0] * 3600) + ($PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2])),1)));
+            } else {
+                $TimeDifference = "0";
+            }
 
             # Add data to JSON array
             if ($BlockFilterFlag) {
