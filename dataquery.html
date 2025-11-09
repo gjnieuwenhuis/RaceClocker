@@ -90,8 +90,6 @@ $(document).ready(function() {
         }
         if(item.ValidResults) {
           validResults = item.ValidResults;
-        } else {
-          validResults = 0;
         }
         if(item.AllResults) {
           allResults = item.AllResults;
@@ -120,10 +118,10 @@ $(document).ready(function() {
         }        
 
         if (listsInSyncStatus.includes('OK')) {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>List Sync</button>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>Lists in Sync</button>`
             ;
         } else {
-            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm disabled'>List Sync</button>`
+            tableHtml += `&nbsp;<button type='button' class='btn btn-danger btn-sm disabled'>Lists in Sync</button>`
            ;          
         }
 
