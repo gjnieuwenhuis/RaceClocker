@@ -4,9 +4,10 @@
 # Copyright G.J.Nieuwenhuis 2025
 
 # 2025-10-28 v0.1   Initial version
+# 2025-11-08 v0.2   Moved actual race data under Results
 
 
-$Version = "v0.1";
+$Version = "v0.2";
 
 # Create empty JSON array
 $JSONData = [];
@@ -85,7 +86,8 @@ if ($ParametersComplete) {
 
     # Are all checks valid? Generate JSON output
     if ($RaceClockerURLCheck) {
-        $JSONData[] = $json;
+        $NewData = ['Results' => $json];
+        $JSONData[] = $NewData;
     }
 
 } else {
