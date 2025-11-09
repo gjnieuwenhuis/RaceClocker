@@ -16,8 +16,9 @@ header("Expires: 0");
 # 2025-10-18 V0.3.2 Added category and block data field, fix for correct check of category fields, added ValidResults for the number of results
 # 2025-10-20 v0.3.3 Added support for filtering on Block
 # 2025-11-08 v0.3.4 Added AllResults for the total number of results, deviation will only be calculated if there is both a primary and secondary time
+# 2025-11-09 v0.3.5 Minor change to return ValidResults and AllResults as proper string values 
 
-$Version = "v0.3.4";
+$Version = "v0.3.5";
 
 # Create empty JSON array
 $JSONData = [];
@@ -347,11 +348,11 @@ if ($ParametersComplete) {
 
         }
         # Add Valid results to the JSON data
-        $ValidResultsData = array('ValidResults' => $ValidResults);
+        $ValidResultsData = array('ValidResults' => Strval($ValidResults));
         $JSONData[] = $ValidResultsData;
 
         # Add all results to the JSON data
-        $AllResultsData = array('AllResults' => $AllResults);
+        $AllResultsData = array('AllResults' => Strval($AllResults));
         $JSONData[] = $AllResultsData;        
           
         for ($Counter = 0; $Counter < $Number; $Counter++) {
