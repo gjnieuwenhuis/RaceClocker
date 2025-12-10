@@ -9,6 +9,7 @@ header("Expires: 0");
 # RaceClocker Timing JSON formatter
 # Copyright G.J.Nieuwenhuis 2025
 
+<<<<<<< HEAD
 # 2025-08-09 v0.1   Initial version.
 # 2025-08-10 v0.2   Added data for primary/secondary URL check and Lists in Sync.
 # 2025-08-13 v0.3   Make time difference always positive and present as string for JSON data.
@@ -23,6 +24,18 @@ header("Expires: 0");
 # 2025-12-10 v0.4   Change for new JSON API endpoint of RaceClocker
 
 $Version = "v0.4";
+=======
+# 2025-08-09 v0.1   Initial version
+# 2025-08-10 v0.2   Added data for primary/secondary URL check and Lists in Sync
+# 2025-08-13 v0.3   Make time difference always positive and present as string for JSON data
+# 2025-09-09 v0.3.1 Minor correction for list sync to skip secondary check if there is no value available
+# 2025-10-18 V0.3.2 Added category and block data field, fix for correct check of category fields, added ValidResults for the number of results
+# 2025-10-20 v0.3.3 Added support for filtering on Block
+# 2025-11-08 v0.3.4 Added AllResults for the total number of results, deviation will only be calculated if there is both a primary and secondary time
+# 2025-11-09 v0.3.5 Minor change to return ValidResults and AllResults as proper string values 
+
+$Version = "v0.3.5";
+>>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
 
 # Create empty JSON array
 $JSONData = [];
@@ -344,10 +357,15 @@ if ($ParametersComplete) {
         # Count number of all and valid results
         $ValidResults = 0;
         $AllResults = 0;
+<<<<<<< HEAD
 
         # If we filter on Block number, search all results
         if ($BlockFilterFlag) {
             for ($Counter = 0; $Counter < count($BibPrimary); $Counter++) {
+=======
+        for ($Counter = 0; $Counter < $Number; $Counter++) {
+            if ($BlockFilterFlag) {
+>>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
                 if ($BlockPrimary[$Counter] == $BlockFilter) {
                     # Find the matching secondary time
                     $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);     
@@ -365,22 +383,36 @@ if ($ParametersComplete) {
                 if ($TimePrimary[$Counter] !== "00:00:00.0" || $TimeSecondary[$SearchTime] !== "00:00:00.0") {
                     $ValidResults++;
                 }
+<<<<<<< HEAD
                 $AllResults++;
                 }
         }
 
         # Add valid results to the JSON data
+=======
+                $AllResults++;            
+            }
+
+        }
+        # Add Valid results to the JSON data
+>>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
         $ValidResultsData = array('ValidResults' => Strval($ValidResults));
         $JSONData[] = $ValidResultsData;
 
         # Add all results to the JSON data
         $AllResultsData = array('AllResults' => Strval($AllResults));
+<<<<<<< HEAD
         $JSONData[] = $AllResultsData;
         $CountReturnedResults = 0;  
 
         for ($Counter = 0; $Counter < (count($BibPrimary)-1); $Counter++) {
         #for ($Counter = 0; $Counter < $Number; $Counter++) {
             
+=======
+        $JSONData[] = $AllResultsData;        
+          
+        for ($Counter = 0; $Counter < $Number; $Counter++) {
+>>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
 
             # Find the matching secondary time
             $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);
@@ -394,7 +426,11 @@ if ($ParametersComplete) {
                 $TimeDifference = "0";
             }
 
+<<<<<<< HEAD
             # Calculate interval between current and previous times, only when there is more than 1 entry, it's not the last one and there is a valid time
+=======
+            # Add data to JSON array
+>>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
             if ($BlockFilterFlag) {
                 # If we are filtering for a specific block, find the previous time for that block
                 $NextBlockValueNotFound = true;
