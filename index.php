@@ -15,8 +15,9 @@
 # 2025-08-17 v0.8.2 Added execution time in dataquery.html
 # 2025-10-20 v0.9 Added support to filter on Block number / changed to relative path for jsondata.php
 # 2025-11-08 v0.9.2 Added AllResults in jsondata.php, corrected deviation bug in dataquery.html to not show red when deviation is negative
+# 2025-12-10 v0.9.4 Changed jsondata.php to support new API endpoint of RaceClocker
 
-$Version = "v0.9.2";
+$Version = "v0.9.4";
 
 # Get all required parameters
 

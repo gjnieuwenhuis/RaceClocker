@@ -9,7 +9,6 @@ header("Expires: 0");
 # RaceClocker Timing JSON formatter
 # Copyright G.J.Nieuwenhuis 2025
 
-<<<<<<< HEAD
 # 2025-08-09 v0.1   Initial version.
 # 2025-08-10 v0.2   Added data for primary/secondary URL check and Lists in Sync.
 # 2025-08-13 v0.3   Make time difference always positive and present as string for JSON data.
@@ -24,18 +23,6 @@ header("Expires: 0");
 # 2025-12-10 v0.4   Change for new JSON API endpoint of RaceClocker
 
 $Version = "v0.4";
-=======
-# 2025-08-09 v0.1   Initial version
-# 2025-08-10 v0.2   Added data for primary/secondary URL check and Lists in Sync
-# 2025-08-13 v0.3   Make time difference always positive and present as string for JSON data
-# 2025-09-09 v0.3.1 Minor correction for list sync to skip secondary check if there is no value available
-# 2025-10-18 V0.3.2 Added category and block data field, fix for correct check of category fields, added ValidResults for the number of results
-# 2025-10-20 v0.3.3 Added support for filtering on Block
-# 2025-11-08 v0.3.4 Added AllResults for the total number of results, deviation will only be calculated if there is both a primary and secondary time
-# 2025-11-09 v0.3.5 Minor change to return ValidResults and AllResults as proper string values 
-
-$Version = "v0.3.5";
->>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
 
 # Create empty JSON array
 $JSONData = [];
@@ -162,112 +149,90 @@ if ($ParametersComplete) {
     # Fetch the primary times
     $PrimaryJSONcontents = file_get_contents($PrimaryJSONURL);
     $PrimaryJSON = json_decode($PrimaryJSONcontents, true);
-
-    #if (preg_match('/let\s+AllResults\s*=\s*(.*);/', $TimesPrimary, $matches)) {
         
-        # Decode the JSON results from the html
-        #$jsonraw = $matches[1];
-        #$json = json_decode($jsonraw,true);
-        
-        if (is_array($PrimaryJSON)) {
-            # Define empty arrays
-            $BibPrimary = [];
-            $BibPrimaryUnsorted = [];
-            $NamePrimary = [];
-            $TimePrimary = [];
-            $CatPrimary = [];
-            $CatPrimaryunsorted = [];
-            $BlockPrimary = [];
+    if (is_array($PrimaryJSON)) {
+        # Define empty arrays
+        $BibPrimary = [];
+        $BibPrimaryUnsorted = [];
+        $NamePrimary = [];
+        $TimePrimary = [];
+        $CatPrimary = [];
+        $CatPrimaryunsorted = [];
+        $BlockPrimary = [];
 
-            # Fill Bib,Name, Time as separate arrays
-            $BlockDataFound = false;
-            foreach($PrimaryJSON as $item) {
-                $BibPrimary[] = $item['Bib number'];
-                $BibPrimaryUnsorted[] = $item['Bib number'];
-                $NamePrimary[] = $item['Name'];
-                $CatPrimary[] = $item['Category'];
-                $CatPrimaryUnsorted[] = $item['Category'];
-                foreach ($item['ExtraInfo'] as $info) {
-                    if (($info[0] === 'Blok') || ($info[0] === 'Block')) {
-                        if (preg_match('/\b(?:Blok|Block)\s+(\d+)/i', $info[1], $matches)) {
-                            $BlockPrimary[] = $matches[1];
-                            $BlockDataFound = true;
-                        }
-                        break;
+        # Fill Bib,Name, Time as separate arrays
+        $BlockDataFound = false;
+        foreach($PrimaryJSON as $item) {
+            $BibPrimary[] = $item['Bib number'];
+            $BibPrimaryUnsorted[] = $item['Bib number'];
+            $NamePrimary[] = $item['Name'];
+            $CatPrimary[] = $item['Category'];
+            $CatPrimaryUnsorted[] = $item['Category'];
+            foreach ($item['ExtraInfo'] as $info) {
+                if (($info[0] === 'Blok') || ($info[0] === 'Block')) {
+                    if (preg_match('/\b(?:Blok|Block)\s+(\d+)/i', $info[1], $matches)) {
+                        $BlockPrimary[] = $matches[1];
+                        $BlockDataFound = true;
                     }
-                }
-
-                # Fetch start times and combine with the decimal values to 00:00:00.0 format
-                if ($Location == "Start") {
-                    #$TimePrimary[] = $item['TmSplit1'].".".$item['TmSplit1dc'];
-                    $TimePrimary[] = $item['Start'];     
-                } else {
-                    #$TimePrimary[] = $item['TmSplit5'].".".$item['TmSplit5dc'];
-                    $TimePrimary[] = $item['Finish'];
+                    break;
                 }
             }
 
-            # Sort the arrays with the last time first
-            if ($BlockDataFound) {
-                array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary,$BlockPrimary);
+            # Fetch start times and combine with the decimal values to 00:00:00.0 format
+            if ($Location == "Start") {
+                $TimePrimary[] = $item['Start'];     
             } else {
-                array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary);
+                $TimePrimary[] = $item['Finish'];
             }
-
-            $StatusMsg = array('PrimaryURLStatus' => 'OK');
-            $JSONData[] = $StatusMsg;
-        } else {
-            $PrimaryJSONURLCheck = false;
         }
-    #} else {
-    #    $PrimaryJSONURLCheck = false;
-    #}
+
+        # Sort the arrays with the last time first
+        if ($BlockDataFound) {
+            array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary,$BlockPrimary);
+        } else {
+            array_multisort($TimePrimary, SORT_DESC,$BibPrimary,$NamePrimary,$CatPrimary);
+        }
+
+        $StatusMsg = array('PrimaryURLStatus' => 'OK');
+        $JSONData[] = $StatusMsg;
+    } else {
+        $PrimaryJSONURLCheck = false;
+    }
+
 
 
     # Fetch the secondary times
     $SecondaryJSONcontents = file_get_contents($SecondaryJSONURL);
     $SecondaryJSON = json_decode($SecondaryJSONcontents, true);
 
-    #if (is_array($SecondaryJSON)) {
-    #if (preg_match('/let\s+AllResults\s*=\s*(.*);/', $TimesSecondary, $matches)) {
+    if (is_array($SecondaryJSON)) {
 
-        # Decode the JSON results from the html
-        #$jsonraw = $matches[1];
-        #$json = json_decode($jsonraw,true);
-        
-        if (is_array($SecondaryJSON)) {
+        # Define empty arrays
+        $BibSecondary = [];
+        $NameSecondary = [];
+        $TimeSecondary = [];
+        $CatSecondary = [];
 
-            # Define empty arrays
-            $BibSecondary = [];
-            $NameSecondary = [];
-            $TimeSecondary = [];
-            $CatSecondary = [];
+        # Fill Bib,Name, Time as separate arrays
+        foreach($SecondaryJSON as $item) {
+            $BibSecondary[] = $item['Bib number'];
+            $NameSecondary[] = $item['Name'];
+            $CatSecondary[] = $item['Category'];
 
-            # Fill Bib,Name, Time as separate arrays
-            foreach($SecondaryJSON as $item) {
-                $BibSecondary[] = $item['Bib number'];
-                $NameSecondary[] = $item['Name'];
-                $CatSecondary[] = $item['Category'];
+            # Fetch start times and combine with the decimal values to 00:00:00.0 format
+            if ($Location == "Start") {
+                $TimeSecondary[] = $item['Start'];
 
-                # Fetch start times and combine with the decimal values to 00:00:00.0 format
-                if ($Location == "Start") {
-                    #$TimeSecondary[] = $item['TmSplit1'].".".$item['TmSplit1dc'];
-                    $TimeSecondary[] = $item['Start'];
-
-                } else {
-                    #$TimeSecondary[] = $item['TmSplit5'].".".$item['TmSplit5dc'];
-                    $TimeSecondary[] = $item['Finish'];
-                }
-
+            } else {
+                $TimeSecondary[] = $item['Finish'];
             }
-            $StatusMsg = array('SecondaryURLStatus' => 'OK');
-            $JSONData[] = $StatusMsg;
-        } else {
-            $SecondaryJSONURLCheck = false;
+
         }
-    #} else {
-    #    $SecondaryJSONURLCheck = false;
-    #}
+        $StatusMsg = array('SecondaryURLStatus' => 'OK');
+        $JSONData[] = $StatusMsg;
+    } else {
+        $SecondaryJSONURLCheck = false;
+    }
 
 
     # If the request number of results is higher than the actual results, match it
@@ -357,15 +322,10 @@ if ($ParametersComplete) {
         # Count number of all and valid results
         $ValidResults = 0;
         $AllResults = 0;
-<<<<<<< HEAD
 
         # If we filter on Block number, search all results
         if ($BlockFilterFlag) {
             for ($Counter = 0; $Counter < count($BibPrimary); $Counter++) {
-=======
-        for ($Counter = 0; $Counter < $Number; $Counter++) {
-            if ($BlockFilterFlag) {
->>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
                 if ($BlockPrimary[$Counter] == $BlockFilter) {
                     # Find the matching secondary time
                     $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);     
@@ -383,36 +343,20 @@ if ($ParametersComplete) {
                 if ($TimePrimary[$Counter] !== "00:00:00.0" || $TimeSecondary[$SearchTime] !== "00:00:00.0") {
                     $ValidResults++;
                 }
-<<<<<<< HEAD
                 $AllResults++;
                 }
         }
 
         # Add valid results to the JSON data
-=======
-                $AllResults++;            
-            }
-
-        }
-        # Add Valid results to the JSON data
->>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
         $ValidResultsData = array('ValidResults' => Strval($ValidResults));
         $JSONData[] = $ValidResultsData;
 
         # Add all results to the JSON data
         $AllResultsData = array('AllResults' => Strval($AllResults));
-<<<<<<< HEAD
         $JSONData[] = $AllResultsData;
         $CountReturnedResults = 0;  
 
         for ($Counter = 0; $Counter < (count($BibPrimary)-1); $Counter++) {
-        #for ($Counter = 0; $Counter < $Number; $Counter++) {
-            
-=======
-        $JSONData[] = $AllResultsData;        
-          
-        for ($Counter = 0; $Counter < $Number; $Counter++) {
->>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
 
             # Find the matching secondary time
             $SearchTime = array_search($BibPrimary[$Counter],$BibSecondary);
@@ -426,16 +370,11 @@ if ($ParametersComplete) {
                 $TimeDifference = "0";
             }
 
-<<<<<<< HEAD
             # Calculate interval between current and previous times, only when there is more than 1 entry, it's not the last one and there is a valid time
-=======
-            # Add data to JSON array
->>>>>>> 12f5992040f7147317238ad154e3e39017ef94be
             if ($BlockFilterFlag) {
                 # If we are filtering for a specific block, find the previous time for that block
                 $NextBlockValueNotFound = true;
                 for ($NextBlockCounter = $Counter + 1; $NextBlockCounter < count($BibPrimary); $NextBlockCounter++) {
-                #for ($NextBlockCounter = $Counter + 1; $NextBlockCounter < $Number; $NextBlockCounter++) {                   
                     if ($BlockPrimary[$NextBlockCounter] == $BlockFilter) {
                         $PreviousCounter = $NextBlockCounter;
                         $NextBlockValueNotFound = false;
@@ -449,7 +388,6 @@ if ($ParametersComplete) {
                 $PreviousCounter = $Counter + 1;
             }
             if (($TimePrimary[$PreviousCounter]!= "00:00:00.0") && ($TimePrimary[$Counter]!= "00:00:00.0")) {
-            #if (($Number > 2) && ($PreviousCounter < $Number) && ($TimePrimary[$PreviousCounter]!= "00:00:00.0") && ($TimePrimary[$Counter]!= "00:00:00.0")) {
                 $PreviousPrimaryTimeSplit = explode(":",$TimePrimary[$PreviousCounter]);
                 $IntervalTime = strval((round(((((int)$PrimaryTimeSplit[0] * 3600) + ((int)$PrimaryTimeSplit[1] * 60) + $PrimaryTimeSplit[2]) - (((int)$PreviousPrimaryTimeSplit[0] * 3600) + ((int)$PreviousPrimaryTimeSplit[1] * 60) + $PreviousPrimaryTimeSplit[2])),1)));
             } else {
