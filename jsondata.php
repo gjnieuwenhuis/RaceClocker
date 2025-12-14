@@ -247,6 +247,7 @@ if ($ParametersComplete) {
     $ListsInSyncCountCheck = true;
     $ListsInSyncBibCheck = true;
     $ListsInSyncCatCheck = true;
+    $ListsInSync = false;
 
     if ($PrimaryJSONURLCheck && $SecondaryJSONURLCheck) {
         $ListsInSync = true;

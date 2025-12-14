@@ -60,7 +60,8 @@ $(document).ready(function() {
       let primaryURLStatus = "";
       let secondaryURLStatus = "";
       let listsInSyncStatus = "";
-      let validResults = "";
+      let validResults = 0;
+      let allResults = 0;
       
 
       $.each(data, function(i, item) {
@@ -125,7 +126,7 @@ $(document).ready(function() {
            ;          
         }
 
-        tableHtml += `&nbsp;<button type='button' class='btn btn-success btn-sm disabled'>Results: ${validResults}/${allResults}</button></h4>`
+        tableHtml += `&nbsp;<button type='button' class='btn btn-sm disabled'>Results: ${validResults}/${allResults}</button></h4>`
 
       tableHtml += `
         <div class='table-responsive'>
